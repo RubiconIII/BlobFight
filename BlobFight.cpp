@@ -8,13 +8,13 @@
 using namespace std;
 
 /* Set initial display-window size. */
-GLsizei winWidth = 1920, winHeight = 1080;
+int winWidth = 3000, winHeight = 2000;
 
 /* Set range for world coordinates. */
-GLfloat xwcMin = 0.0, xwcMax = 1920.0;
-GLfloat ywcMin = 0.0, ywcMax = 1080.0;
+float xwcMin = 0.0, xwcMax = 3000.0;
+float ywcMin = 0.0, ywcMax = 2000.0;
 
-class Food 
+class Food
 {
 public:
 	int x, y, r;
@@ -62,10 +62,10 @@ double redRad = 40;
 const int NUM_BLOBS = 50;
 
 int maxRad = max(redRad, blueRad);
-	
+
 Food foodArray[100];
 
-void displayFcn(void) 
+void displayFcn(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPushMatrix();
@@ -84,13 +84,13 @@ void displayFcn(void)
 	updateBackground();
 	updateSpeeds();
 
-	for (int count = 0; count < NUM_BLOBS; count++) 
+	for (int count = 0; count < NUM_BLOBS; count++)
 	{
 		foodBlob(count);
 	}
 	textPrep();
-    glFlush();
-    tick++;
+	glFlush();
+	tick++;
 }
 
 void drawBitmapText(char *string, float x, float y, float z, bool isBig) //prints bitmap text to screen
@@ -112,13 +112,13 @@ void drawBitmapText(char *string, float x, float y, float z, bool isBig) //print
 }
 
 void updateSpeeds() //speed increases as players collect food, is based on other player's size.
-{  
+{
 	blueSpeed = (redRad / 40);
 	redSpeed = (blueRad / 40);
 }
 
 void textPrep() // prepares text to be printed to screen
-{  
+{
 	if (tick < 1000) {
 		glColor3f(1, 1, 1);
 		drawBitmapText((char*)"BlobFight!", (xwcMax / 2) - 100, (ywcMax / 2) + 400, 0, true);
@@ -126,18 +126,18 @@ void textPrep() // prepares text to be printed to screen
 	}
 
 	if (redRad == 0) // checks if blue player won
-	{ 
+	{
 		drawBitmapText((char*)"The Blue Player Won!", (xwcMax / 2) - 180, (ywcMax / 2) + 300, 0, true);
 	}
 	else if (blueRad == 0) // checks if red player won
-	{  
+	{
 		drawBitmapText((char*)"The Red Player Won!", (xwcMax / 2) - 180, (ywcMax / 2) + 300, 0, true);
 	}
 }
 
 void updateBackground() // changes color of background based on the player currently in the lead.
-{ 
-	if (blueRad > redRad) 
+{
+	if (blueRad > redRad)
 	{
 		glClearColor(backGrey[0], backGrey[1], backGrey[2] + ((blueRad - redRad) / 100), 0.0);
 	}
@@ -145,7 +145,7 @@ void updateBackground() // changes color of background based on the player curre
 	{
 		glClearColor(backGrey[0] + ((redRad - blueRad) / 100), backGrey[1], backGrey[2], 0.0);
 	}
-	else 
+	else
 	{
 		glClearColor(backGrey[0], backGrey[1], backGrey[2], 0.0);
 	}
@@ -155,11 +155,11 @@ void checkCollisionPlayers() // checks to see if players are colliding
 {
 	if (sqrt((blueXPos - redXPos) * (blueXPos - redXPos) + (blueYPos - redYPos) * (blueYPos - redYPos)) < (redRad + blueRad - 10))
 	{
-		if (blueRad > redRad + 5) 
+		if (blueRad > redRad + 5)
 		{
 			redRad = 0;
 		}
-		else if (redRad > blueRad + 5) 
+		else if (redRad > blueRad + 5)
 		{
 			blueRad = 0;
 		}
@@ -167,56 +167,56 @@ void checkCollisionPlayers() // checks to see if players are colliding
 }
 
 void checkCollisionFood(int foodX, int foodY, int foodRad, int count) // checks collisions from players to food  
-{ 
+{
 	maxRad = max(redRad, blueRad);
-	if (sqrt((foodX - redXPos) * (foodX - redXPos) + (foodY - redYPos) * (foodY - redYPos)) < (redRad + foodRad) && redRad < 500) 
+	if (sqrt((foodX - redXPos) * (foodX - redXPos) + (foodY - redYPos) * (foodY - redYPos)) < (redRad + foodRad) && redRad < 500)
 	{
 		redRad += foodRad / 10;
-		foodArray[count].x = rand() % 1900 + 1;
-		foodArray[count].y = rand() % 1000 + 1;
+		foodArray[count].x = rand() % int(xwcMax) + 1;
+		foodArray[count].y = rand() % int(ywcMax) + 1;
 		foodArray[count].r = rand() % (maxRad / 2) + 1;
 	}
-	else if (sqrt((foodX - blueXPos) * (foodX - blueXPos) + (foodY - blueYPos) * (foodY - blueYPos)) < (blueRad + foodRad) && blueRad < 500) 
+	else if (sqrt((foodX - blueXPos) * (foodX - blueXPos) + (foodY - blueYPos) * (foodY - blueYPos)) < (blueRad + foodRad) && blueRad < 500)
 	{
 		blueRad += foodRad / 10;
-		foodArray[count].x = rand() % 1900 + 1;
-		foodArray[count].y = rand() % 1000 + 1;
+		foodArray[count].x = rand() % int(xwcMax) + 1;
+		foodArray[count].y = rand() % int(ywcMax) + 1;
 		foodArray[count].r = rand() % (maxRad / 2) + 1;
 	}
 }
 
 void foodBlob(int count) // draws the foodBlob at count
-{ 
+{
 	glPushMatrix();
 	checkCollisionFood(foodArray[count].x, foodArray[count].y, foodArray[count].r, count);
 	glTranslatef(foodArray[count].x, foodArray[count].y, 0);
 
-	if (count % 2 == 0) 
+	if (count % 2 == 0)
 	{
 		glColor3f(foodGrey[1], foodGrey[2], foodGrey[3]);
 	}
-	else 
+	else
 	{
 		glColor3f(foodWhite[1], foodWhite[2], foodWhite[3]);
-	}	
+	}
 
 	int detail = 40;
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex2f(0, 0);
-		for (int i = 0; i < detail; i++) 
-		{
-			double deg = (i * (360) / detail);
-			double x =  foodArray[count].r * cos(deg);
-			double y = foodArray[count].r * sin(deg);
-			glVertex2f(x, y);
-		}
+	for (int i = 0; i < detail; i++)
+	{
+		double deg = (i * (360) / detail);
+		double x = foodArray[count].r * cos(deg);
+		double y = foodArray[count].r * sin(deg);
+		glVertex2f(x, y);
+	}
 	glEnd();
 	glPopMatrix();
 }
 
 void blueUpdatePos() // updates blue player's postion based on blueDirection case
-{ 
-	switch (blueDirection) 
+{
+	switch (blueDirection)
 	{
 	case 0:
 		if (blueXPos < xwcMax + 2)
@@ -238,7 +238,7 @@ void blueUpdatePos() // updates blue player's postion based on blueDirection cas
 }
 
 void redUpdatePos() // updates red player's postion based on redDirection case
-{ 
+{
 	switch (redDirection) {
 	case 0:
 		if (redXPos < xwcMax + 2)
@@ -260,33 +260,33 @@ void redUpdatePos() // updates red player's postion based on redDirection case
 }
 
 void bluePlayer() // draws blue player
-{ 
-    glPushMatrix();
+{
+	glPushMatrix();
 	glRotatef(100 * sin(blueDirection), 0, 0, -1);
-    glColor3f(playerBlue[0], playerBlue[1], playerBlue[2]);
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(0, 0);
-    int detail = 30;
-    for (int i = 0; i < detail; i++) 
+	glColor3f(playerBlue[0], playerBlue[1], playerBlue[2]);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(0, 0);
+	int detail = 30;
+	for (int i = 0; i < detail; i++)
 	{
 		double deg = (i * (360) / detail);
-        double x = blueRad * cos(deg);
-        double y = blueRad * sin(deg);
-        glVertex2f(x, y);
-    }
-    glEnd();
-    glPopMatrix();
+		double x = blueRad * cos(deg);
+		double y = blueRad * sin(deg);
+		glVertex2f(x, y);
+	}
+	glEnd();
+	glPopMatrix();
 }
 
 void redPlayer() // draws red player
-{ 
+{
 	glPushMatrix();
 	glRotatef(100 * sin(redDirection), 0, 0, -1);
 	glColor3f(playerRed[0], playerRed[1], playerRed[2]);
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex2f(0, 0);
 	int detail = 30;
-	for (int i = 0; i < detail; i++) 
+	for (int i = 0; i < detail; i++)
 	{
 		double deg = (i * (360) / detail);
 		double x = redRad * cos(deg);
@@ -298,7 +298,7 @@ void redPlayer() // draws red player
 }
 
 void keyboardFunc(unsigned char Key, int x, int y) //blue is controlled by wasd
-{ 
+{
 	switch (Key)
 	{
 	case 'w':
@@ -317,7 +317,7 @@ void keyboardFunc(unsigned char Key, int x, int y) //blue is controlled by wasd
 }
 
 void arrowFunc(int key, int x, int y) //red is controlled by arrow keys
-{ 
+{
 	switch (key) {
 	case GLUT_KEY_UP:
 		redDirection = 3;
@@ -335,12 +335,12 @@ void arrowFunc(int key, int x, int y) //red is controlled by arrow keys
 }
 
 void populate() // for initial population of foodArray[]
-{ 
+{
 	srand(time(NULL));
-	for (int i = 0; i < NUM_BLOBS; i++) 
+	for (int i = 0; i < NUM_BLOBS; i++)
 	{
-		foodArray[i].x = rand() % 1900 + 1;
-		foodArray[i].y = rand() % 1000 + 1;
+		foodArray[i].x = rand() % int(xwcMax) + 1;
+		foodArray[i].y = rand() % int(ywcMax) + 1;
 		foodArray[i].r = rand() % (maxRad / 2) + 1;
 	}
 }
@@ -353,14 +353,14 @@ void winReshapeFcn(GLint newWidth, GLint newHeight)  // window reshape
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void timer(int value) 
+void timer(int value)
 {
 	glutPostRedisplay();      // Post re-paint request to activate display()
 	glutTimerFunc(REFRESH_MS, timer, 0); // next timer call milliseconds later
 }
 
 void init(void) //Set color of display window to a nice grey.
-{ 
+{
 	glClearColor(backGrey[0], backGrey[1], backGrey[2], 0.0);
 }
 
