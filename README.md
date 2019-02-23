@@ -1,5 +1,7 @@
 # BlobFight
 
+By: Curtis P. Hohl 👨‍💻
+
 BlobFight is based on .io games like Agar.io.  The program is designed to be run on one computer with two players.
 There are two sides, red vs. blue.
 Each player races to collect "food blobs" which will grow the player blobs in size.
